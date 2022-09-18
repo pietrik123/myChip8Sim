@@ -220,9 +220,15 @@ void Chip::logMemory(int offset, int numOfBytes)
     std::cout << "\n";
 }
 
-void Chip::loadProgram(const std::string& fileName)
+bool Chip::loadProgram(const std::string& fileName)
 {
     std::ifstream ifs(fileName.c_str(), std::ios_base::in | std::ios_base::binary);
+    
+    if (ifs.fail())
+    {
+        std::cout << "Cannot open file: " << fileName << "\n";
+        return false;
+    }
     
     const int maxSize = memSize - programStart;
    
@@ -236,6 +242,7 @@ void Chip::loadProgram(const std::string& fileName)
     std::cout <<"\n";
     
     ifs.close();
+    return true;
 }
 
     

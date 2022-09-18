@@ -1,4 +1,4 @@
-#include "SDL.h"
+#include "SDL2/SDL.h"
 #include "MyGfx.h"
 #include "Chip.h"
 
@@ -10,6 +10,13 @@ bool shouldQuit();
 
 int main(int argc, char** argv)
 {
+    
+    if (argc < 2)
+    {
+        std::cout << "Please provide a program file as argument!\n";
+        return 1;
+    }
+    
     std::cout << "Hello world!\n"; 
 
     MyGfx gfx(64,32,8);
@@ -17,11 +24,14 @@ int main(int argc, char** argv)
     
     SDL_Delay(500);
     
-    
     myChip.logMemory(80,80);
     myChip.logRegisters();
     
-    myChip.loadProgram("build\\ibm.ch8");
+    if (!myChip.loadProgram(argv[1]))
+    {
+        std::cout << "Failed to load the program!\n";
+        return 1;
+    }
     
     int cnt = 0;
     while (true)
@@ -41,6 +51,7 @@ int main(int argc, char** argv)
     }
     
     SDL_Delay(200);
+    return 0;
 }
 
 bool shouldQuit()

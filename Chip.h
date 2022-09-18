@@ -92,7 +92,7 @@ public:
     void logMemory(int offset, int numOfBytes);
     
     // load program
-    void loadProgram(const std::string& fileName);
+    bool loadProgram(const std::string& fileName);
 };
 
 std::string getRegisterName(uint8_t idx);
