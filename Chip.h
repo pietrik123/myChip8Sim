@@ -19,7 +19,11 @@ enum class InstructionType
     SET_IDX,
     DISPLAY,
     CALL_SUBROUTINE,
-    RETURN_FROM_SUBROUTINE
+    RETURN_FROM_SUBROUTINE,
+    SKIP_VX_EQUAL_NN,
+    SKIP_VX_NOT_EQUAL_NN,
+    SKIP_VX_EQUAL_VY,
+    SKIP_VX_NOT_EQUAL_VY
 };
 
 const std::map<InstructionType, std::string> instrTypeVsDescriptionMap
@@ -102,6 +106,11 @@ public:
     void display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n);
     void callSubroutine(uint16_t nnn);
     void returnFromSubroutine();
+
+    void skipVxEqualNN(uint8_t x, uint8_t nn);
+    void skipVxNotEqualNN(uint8_t x, uint8_t nn);
+    void skipVxEqualVy(uint8_t x, uint8_t y);
+    void skipVxNotEqualVy(uint8_t x, uint8_t y);
     
     // logging
     void logRegisters();

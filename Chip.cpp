@@ -56,6 +56,60 @@ uint16_t Chip::fetch()
     return ((static_cast<uint16_t>(firstByte) << 8) | static_cast<uint16_t>(secondByte));
 }
 
+static InstructionType getInstructionType(uint8_t* nibblesArray)
+{
+    
+    if (nibblesArray[0] == 0x0 && nibblesArray[1] == 0x0 && nibblesArray[2] == 0xe && nibblesArray[3] == 0x0)
+    {
+        return InstructionType::CLEAR_SCREEN;
+    }
+    else if (nibblesArray[0] == 0x0 && nibblesArray[1] == 0x0 && nibblesArray[2] == 0xe && nibblesArray[3] == 0xe)
+    {
+        return InstructionType::RETURN_FROM_SUBROUTINE;
+    }
+    else if (nibblesArray[0] == 0x1)
+    {
+        return InstructionType::JUMP;
+    }
+    else if (nibblesArray[0] == 0x2)
+    {
+        return InstructionType::CALL_SUBROUTINE;
+    }
+    else if (nibblesArray[0] == 0x3)
+    {
+        return InstructionType::SKIP_VX_EQUAL_NN;
+    }
+    else if (nibblesArray[0] == 0x4)
+    {
+        return InstructionType::SKIP_VX_NOT_EQUAL_NN;
+    }
+    else if (nibblesArray[0] == 0x5)
+    {
+        return InstructionType::SKIP_VX_EQUAL_VY;
+    }
+    else if (nibblesArray[0] == 0x9)
+    {
+        return InstructionType::SKIP_VX_NOT_EQUAL_VY;
+    }
+    else if (nibblesArray[0] == 0x6)
+    {
+        return InstructionType::SET_VX;
+    }
+    else if (nibblesArray[0] == 0x7)
+    {
+        return InstructionType::ADD_TO_VX;
+    }
+    else if (nibblesArray[0] == 0xa)
+    {
+        return InstructionType::SET_IDX;
+    }
+    else if (nibblesArray[0] == 0xd)
+    {
+        return InstructionType::DISPLAY;
+    }
+    return InstructionType::UNKNOWN;
+}
+
 InstructionData Chip::decode(uint16_t rawInstruction)
 {
     InstructionData data;
@@ -68,47 +122,6 @@ InstructionData Chip::decode(uint16_t rawInstruction)
         static_cast<uint8_t>((rawInstruction & 0xf00) >> 8),
         static_cast<uint8_t>((rawInstruction & 0xf0) >> 4),
         static_cast<uint8_t>(rawInstruction & 0xf)
-    };
-
-    auto getInstructionType = [](uint8_t* nibblesArray)
-    {
-        if (nibblesArray[0] == 0x0 && nibblesArray[1] == 0x0 && nibblesArray[2] == 0xe && nibblesArray[3] == 0x0)
-        {
-            return InstructionType::CLEAR_SCREEN;
-        }
-        else if (nibblesArray[0] == 0x0 && nibblesArray[1] == 0x0 && nibblesArray[2] == 0xe && nibblesArray[3] == 0xe)
-        {
-            return InstructionType::RETURN_FROM_SUBROUTINE;
-        }
-        else if (nibblesArray[0] == 0x1)
-        {
-            return InstructionType::JUMP;
-        }
-        else if (nibblesArray[0] == 0x2)
-        {
-            return InstructionType::CALL_SUBROUTINE;
-        }
-        else if (nibblesArray[0] == 0x6)
-        {
-            return InstructionType::SET_VX;
-        }
-        else if (nibblesArray[0] == 0x7)
-        {
-            return InstructionType::ADD_TO_VX;
-        }
-        else if (nibblesArray[0] == 0xa)
-        {
-            return InstructionType::SET_IDX;
-        }
-        else if (nibblesArray[0] == 0xd)
-        {
-            return InstructionType::DISPLAY;
-        }
-
-        else
-        {
-            return InstructionType::UNKNOWN;
-        }
     };
 
     data.instructionType = getInstructionType(nibbles);
@@ -170,6 +183,18 @@ void Chip::jump(uint16_t nnn)
     programCounter = nnn;
 }
 
+void Chip::callSubroutine(uint16_t nnn)
+{
+    stack.push(programCounter);
+    programCounter = nnn;
+}
+
+void Chip::returnFromSubroutine()
+{
+    programCounter = stack.top();
+    stack.pop();
+}
+
 void Chip::setRegisterVx(uint8_t x, uint8_t nn)
 {
     registers[getRegisterName(x)] = nn;
@@ -183,6 +208,38 @@ void Chip::addValToVx(uint8_t x, uint8_t nn)
 void Chip::setIdxRegister(uint16_t nnn)
 {
     registerIdx = nnn;
+}
+
+void Chip::skipVxEqualNN(uint8_t x, uint8_t nn)
+{
+    if (registers[getRegisterName(x)] == nn)
+    {
+        programCounter += 2;
+    }
+}
+
+void Chip::skipVxNotEqualNN(uint8_t x, uint8_t nn)
+{
+    if (registers[getRegisterName(x)] != nn)
+    {
+        programCounter += 2;
+    }
+}
+
+void Chip::skipVxEqualVy(uint8_t x, uint8_t y)
+{
+    if (registers[getRegisterName(x)] == registers[getRegisterName(y)])
+    {
+        programCounter += 2;
+    }
+}
+
+void Chip::skipVxNotEqualVy(uint8_t x, uint8_t y)
+{
+    if (registers[getRegisterName(x)] != registers[getRegisterName(y)])
+    {
+        programCounter += 2;
+    }
 }
 
 void Chip::display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n)
