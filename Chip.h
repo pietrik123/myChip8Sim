@@ -17,7 +17,9 @@ enum class InstructionType
     SET_VX,
     ADD_TO_VX,
     SET_IDX,
-    DISPLAY
+    DISPLAY,
+    CALL_SUBROUTINE,
+    RETURN_FROM_SUBROUTINE
 };
 
 const std::map<InstructionType, std::string> instrTypeVsDescriptionMap
@@ -98,6 +100,8 @@ public:
     void addValToVx(uint8_t x, uint8_t nn);
     void setIdxRegister(uint16_t nnn);
     void display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n);
+    void callSubroutine(uint16_t nnn);
+    void returnFromSubroutine();
     
     // logging
     void logRegisters();

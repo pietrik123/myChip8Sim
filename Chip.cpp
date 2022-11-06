@@ -76,9 +76,17 @@ InstructionData Chip::decode(uint16_t rawInstruction)
         {
             return InstructionType::CLEAR_SCREEN;
         }
+        else if (nibblesArray[0] == 0x0 && nibblesArray[1] == 0x0 && nibblesArray[2] == 0xe && nibblesArray[3] == 0xe)
+        {
+            return InstructionType::RETURN_FROM_SUBROUTINE;
+        }
         else if (nibblesArray[0] == 0x1)
         {
             return InstructionType::JUMP;
+        }
+        else if (nibblesArray[0] == 0x2)
+        {
+            return InstructionType::CALL_SUBROUTINE;
         }
         else if (nibblesArray[0] == 0x6)
         {
@@ -96,6 +104,7 @@ InstructionData Chip::decode(uint16_t rawInstruction)
         {
             return InstructionType::DISPLAY;
         }
+
         else
         {
             return InstructionType::UNKNOWN;
