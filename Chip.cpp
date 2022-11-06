@@ -9,6 +9,15 @@
 namespace MyChip8
 {
 
+std::string getInstructionTypeDescription(InstructionType instructionType)
+{
+    if (instrTypeVsDescriptionMap.find(instructionType) != instrTypeVsDescriptionMap.end())
+    {
+        return instrTypeVsDescriptionMap.at(instructionType);
+    }
+    return std::string {"UNKNOW_DESCRIPTION"};
+}
+
 std::string getRegisterName(uint8_t idx)
 {
     return std::string {"v"} + std::to_string(static_cast<int>(idx));
@@ -52,15 +61,59 @@ InstructionData Chip::decode(uint16_t rawInstruction)
     InstructionData data;
     
     // decoding instruction, byte order is BIG-ENDIAN
-    data.opcode = static_cast<InstructionType>((rawInstruction & 0xf000) >> 12);
-    data.x = static_cast<uint8_t>((rawInstruction & 0xf00) >> 8);
-    data.y = static_cast<uint8_t>((rawInstruction & 0xf0) >> 4);
-    data.n = static_cast<uint8_t>(rawInstruction & 0xf);
+
+    uint8_t nibbles [] = 
+    {
+        static_cast<uint8_t>((rawInstruction & 0xf000) >> 12),
+        static_cast<uint8_t>((rawInstruction & 0xf00) >> 8),
+        static_cast<uint8_t>((rawInstruction & 0xf0) >> 4),
+        static_cast<uint8_t>(rawInstruction & 0xf)
+    };
+
+    auto getInstructionType = [](uint8_t* nibblesArray)
+    {
+        if (nibblesArray[0] == 0x0 && nibblesArray[1] == 0x0 && nibblesArray[2] == 0xe && nibblesArray[3] == 0x0)
+        {
+            return InstructionType::CLEAR_SCREEN;
+        }
+        else if (nibblesArray[0] == 0x1)
+        {
+            return InstructionType::JUMP;
+        }
+        else if (nibblesArray[0] == 0x6)
+        {
+            return InstructionType::SET_VX;
+        }
+        else if (nibblesArray[0] == 0x7)
+        {
+            return InstructionType::ADD_TO_VX;
+        }
+        else if (nibblesArray[0] == 0xa)
+        {
+            return InstructionType::SET_IDX;
+        }
+        else if (nibblesArray[0] == 0xd)
+        {
+            return InstructionType::DISPLAY;
+        }
+        else
+        {
+            return InstructionType::UNKNOWN;
+        }
+    };
+
+    data.instructionType = getInstructionType(nibbles);
+    
+    data.x = nibbles[1];
+    data.y = nibbles[2];
+    data.n = nibbles[3];
+
     data.nn = static_cast<uint8_t>(rawInstruction & 0x00ff);
     data.nnn = rawInstruction & 0x0fff;
     
     std::cout << "Raw instr: " << std::hex << static_cast<int>(rawInstruction) << "\n";
-    std::cout << "Opcode: " << static_cast<int>(data.opcode) << " \n"
+
+    std::cout << "Instruction type: " << getInstructionTypeDescription(data.instructionType) << " \n"
               << "X: " << static_cast<int>(data.x) << " \n"
               << "Y: " << static_cast<int>(data.y) << " \n"
               << "N: " << static_cast<int>(data.n) << " \n"
@@ -73,28 +126,28 @@ InstructionData Chip::decode(uint16_t rawInstruction)
 void Chip::execute(MyGfx* gfx, const InstructionData& data)
 {
     
-    switch (data.opcode)
+    switch (data.instructionType)
     {
-        case CLEAR_SCREEN:
+        case InstructionType::CLEAR_SCREEN:
             clearScreen(gfx);
             break;
-        case JUMP:
+        case InstructionType::JUMP:
             jump(data.nnn);
             break;
-        case SET_VX:
+        case InstructionType::SET_VX:
             setRegisterVx(data.x, data.nn);
             break;
-        case ADD_TO_VX:
+        case InstructionType::ADD_TO_VX:
             addValToVx(data.x, data.nn);
             break;
-        case SET_IDX:
+        case InstructionType::SET_IDX:
             setIdxRegister(data.nnn);
             break;
-        case DISPLAY:
+        case InstructionType::DISPLAY:
             display(gfx, data.x, data.y, data.n);
             break;
         default:
-            std::cout << "Unknown instruction: " << static_cast<int>(data.opcode) << "\n-----\n";
+            std::cout << "Unknown instruction: " << static_cast<int>(data.instructionType) << "\n-----\n";
     }
 }
 

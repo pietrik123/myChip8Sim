@@ -9,19 +9,33 @@
 namespace MyChip8
 {
 
-enum InstructionType : uint8_t
+enum class InstructionType 
 {
-    CLEAR_SCREEN = 0x0,
-    JUMP = 0x1,
-    SET_VX = 0x6,
-    ADD_TO_VX = 0x7,
-    SET_IDX = 0xa,
-    DISPLAY = 0xd
+    UNKNOWN,
+    CLEAR_SCREEN,
+    JUMP,
+    SET_VX,
+    ADD_TO_VX,
+    SET_IDX,
+    DISPLAY
 };
+
+const std::map<InstructionType, std::string> instrTypeVsDescriptionMap
+{
+    {InstructionType::UNKNOWN, "UNKNOWN"},
+    {InstructionType::CLEAR_SCREEN, "CLEAR_SCREEN"},
+    {InstructionType::JUMP, "JUMP"},
+    {InstructionType::SET_VX, "SET_VX"},
+    {InstructionType::ADD_TO_VX, "ADD_TO_VX"},
+    {InstructionType::SET_IDX, "SET_IDX"},
+    {InstructionType::DISPLAY, "DISPLAY"}
+};
+
+std::string getInstructionTypeDescription(InstructionType instructionType);
 
 struct InstructionData
 {
-    InstructionType opcode;
+    InstructionType instructionType;
     uint8_t x;
     uint8_t y;
     uint8_t n;
@@ -51,9 +65,7 @@ const uint8_t fontsData[] =
 
 class Chip
 {
-    
-public:
-
+private:
     static const uint16_t programStart = 0x200u;
     static const uint8_t screenWidth = 64u;
     static const uint8_t screenHeight = 32u;
@@ -64,12 +76,13 @@ public:
     uint16_t programCounter;
     uint16_t registerIdx;
     std::map<std::string, uint8_t> registers;
-    
+
+    std::stack<uint16_t> stack;
+public:
+
+
     // TODO delay timer
     // TODO sound timer
-    
-    std::stack<uint16_t> stack; 
-    
     
     Chip();
     
@@ -93,6 +106,7 @@ public:
     
     // load program
     bool loadProgram(const std::string& fileName);
+
 };
 
 std::string getRegisterName(uint8_t idx);
