@@ -128,6 +128,8 @@ public:
     void addVxAndVy(uint8_t x, uint8_t y);
     void substractVxAndVy(uint8_t x, uint8_t y);
     void substractVyAndVx(uint8_t x, uint8_t y);
+    void shiftRight(uint8_t x, uint8_t y);
+    void shiftLeft(uint8_t x, uint8_t y);
     
     // logging
     void logRegisters();

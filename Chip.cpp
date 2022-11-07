@@ -284,10 +284,37 @@ void Chip::setVxVy(uint8_t x, uint8_t y)
     registers[getRegisterName(x)] = registers[getRegisterName(y)];
 }
 
+void Chip::binaryOr(uint8_t x, uint8_t y)
+{
+    auto& vx = registers[getRegisterName(x)];
+    const auto& vy = registers[getRegisterName(y)];
+
+    vx = vx | vy;
+}
+
+void Chip::binaryAnd(uint8_t x, uint8_t y)
+{
+    auto& vx = registers[getRegisterName(x)];
+    const auto& vy = registers[getRegisterName(y)];
+
+    vx = vx | vy;
+}
+
+void Chip::logicalXor(uint8_t x, uint8_t y)
+{
+    auto& vx = registers[getRegisterName(x)];
+    const auto& vy = registers[getRegisterName(y)];
+
+    vx = vx ^ vy;
+}
+
 void Chip::addVxAndVy(uint8_t x, uint8_t y)
 {
-    uint16_t tmpSum = registers[getRegisterName(x)] + registers[getRegisterName(y)];
-    registers[getRegisterName(x)]  = static_cast<uint8_t>(tmpSum && 0xff);
+    auto& vx = registers[getRegisterName(x)];
+    const auto& vy = registers[getRegisterName(y)];
+
+    uint16_t tmpSum = vx + vy;
+    vx  = static_cast<uint8_t>(tmpSum && 0xff);
     registers["vf"] = (tmpSum > 255 ? 1 : 0);
 }
 
@@ -295,6 +322,7 @@ void Chip::substractVxAndVy(uint8_t x, uint8_t y)
 {
     auto& vx = registers[getRegisterName(x)];
     const auto& vy = registers[getRegisterName(y)];
+
     vx = static_cast<uint8_t>(vx - vy);
     registers["vf"] = (vx >= vy ? 1 : 0);
 }
@@ -303,8 +331,29 @@ void Chip::substractVyAndVx(uint8_t x, uint8_t y)
 {
     auto& vx = registers[getRegisterName(x)];
     const auto& vy = registers[getRegisterName(y)];
+
     vx = static_cast<uint8_t>(vy - vx);
     registers["vf"] = (vy >= vx ? 1 : 0);
+}
+
+void Chip::shiftRight(uint8_t x, uint8_t y)
+{
+    auto& vx = registers[getRegisterName(x)];
+    const auto& vy = registers[getRegisterName(y)];
+
+    vx = vy;
+    registers["vf"] = (vx & 0x1 > 0u ? 1 : 0);
+    vx = (vx >> 1);
+}
+
+void Chip::shiftLeft(uint8_t x, uint8_t y)
+{
+    auto& vx = registers[getRegisterName(x)];
+    const auto& vy = registers[getRegisterName(y)];
+
+    vx = vy;
+    registers["vf"] = (vx & 0x80 > 0u ? 1 : 0);
+    vx = (vx << 1);
 }
 
 void Chip::display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n)
