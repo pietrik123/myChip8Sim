@@ -23,7 +23,16 @@ enum class InstructionType
     SKIP_VX_EQUAL_NN,
     SKIP_VX_NOT_EQUAL_NN,
     SKIP_VX_EQUAL_VY,
-    SKIP_VX_NOT_EQUAL_VY
+    SKIP_VX_NOT_EQUAL_VY,
+    SET_VX_VY,
+    BINARY_OR,
+    BINARY_AND,
+    LOGICAL_XOR,
+    ADD_VX_VY,
+    SUBTRACT_VX_VY,
+    SUBTRACT_VY_VX,
+    SHIFT_RIGHT,
+    SHIFT_LEFT
 };
 
 const std::map<InstructionType, std::string> instrTypeVsDescriptionMap
@@ -111,6 +120,14 @@ public:
     void skipVxNotEqualNN(uint8_t x, uint8_t nn);
     void skipVxEqualVy(uint8_t x, uint8_t y);
     void skipVxNotEqualVy(uint8_t x, uint8_t y);
+
+    void setVxVy(uint8_t x, uint8_t y);
+    void binaryOr(uint8_t x, uint8_t y);
+    void binaryAnd(uint8_t x, uint8_t y);
+    void logicalXor(uint8_t x, uint8_t y);
+    void addVxAndVy(uint8_t x, uint8_t y);
+    void substractVxAndVy(uint8_t x, uint8_t y);
+    void substractVyAndVx(uint8_t x, uint8_t y);
     
     // logging
     void logRegisters();

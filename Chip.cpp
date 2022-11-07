@@ -99,6 +99,43 @@ static InstructionType getInstructionType(uint8_t* nibblesArray)
     {
         return InstructionType::ADD_TO_VX;
     }
+    // LOGICAL AND ARITHMETIC
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x0)
+    {
+        return InstructionType::SET_VX_VY;
+    }
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x1)
+    {
+        return InstructionType::BINARY_OR;
+    }
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x2)
+    {
+        return InstructionType::BINARY_AND;
+    }
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x3)
+    {
+        return InstructionType::LOGICAL_XOR;
+    }
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x4)
+    {
+        return InstructionType::ADD_VX_VY;
+    }
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x5)
+    {
+        return InstructionType::SUBTRACT_VX_VY;
+    }
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x6)
+    {
+        return InstructionType::SHIFT_RIGHT;
+    }
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x7)
+    {
+        return InstructionType::SUBTRACT_VY_VX;
+    }
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x8)
+    {
+        return InstructionType::SHIFT_LEFT;
+    }
     else if (nibblesArray[0] == 0xa)
     {
         return InstructionType::SET_IDX;
@@ -240,6 +277,34 @@ void Chip::skipVxNotEqualVy(uint8_t x, uint8_t y)
     {
         programCounter += 2;
     }
+}
+
+void Chip::setVxVy(uint8_t x, uint8_t y)
+{
+    registers[getRegisterName(x)] = registers[getRegisterName(y)];
+}
+
+void Chip::addVxAndVy(uint8_t x, uint8_t y)
+{
+    uint16_t tmpSum = registers[getRegisterName(x)] + registers[getRegisterName(y)];
+    registers[getRegisterName(x)]  = static_cast<uint8_t>(tmpSum && 0xff);
+    registers["vf"] = (tmpSum > 255 ? 1 : 0);
+}
+
+void Chip::substractVxAndVy(uint8_t x, uint8_t y)
+{
+    auto& vx = registers[getRegisterName(x)];
+    const auto& vy = registers[getRegisterName(y)];
+    vx = static_cast<uint8_t>(vx - vy);
+    registers["vf"] = (vx >= vy ? 1 : 0);
+}
+
+void Chip::substractVyAndVx(uint8_t x, uint8_t y)
+{
+    auto& vx = registers[getRegisterName(x)];
+    const auto& vy = registers[getRegisterName(y)];
+    vx = static_cast<uint8_t>(vy - vx);
+    registers["vf"] = (vy >= vx ? 1 : 0);
 }
 
 void Chip::display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n)
