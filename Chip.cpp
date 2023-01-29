@@ -5,6 +5,8 @@
 #include <cstring>
 #include <fstream>
 #include <vector>
+#include <ctime>
+#include <random>
 
 namespace MyChip8
 {
@@ -44,6 +46,8 @@ Chip::Chip()
     
     std::memcpy(memory+0x050, fontsData, 80);
     programCounter = programStart;
+
+    std::srand(std::time(nullptr));
 }
 
 uint16_t Chip::fetch()
@@ -139,6 +143,10 @@ static InstructionType getInstructionType(uint8_t* nibblesArray)
     else if (nibblesArray[0] == 0xa)
     {
         return InstructionType::SET_IDX;
+    }
+    else if (nibblesArray[0] == 0xc)
+    {
+        return InstructionType::RANDOM;
     }
     else if (nibblesArray[0] == 0xd)
     {
@@ -403,6 +411,32 @@ void Chip::display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n)
         }
     }
     gfx->updateDisplay();
+}
+
+void Chip::random(uint8_t x, uint8_t nn)
+{
+    registers[getRegisterName(x)] = std::rand() % 255;
+}
+
+
+void Chip::skipIfKeyIsPressed(uint8_t x)
+{
+    const uint8_t key = registers[getRegisterName(x)];
+
+    if (isKeyPressed(key))
+    {
+        programCounter += 2u;
+    }
+}
+
+void Chip::skipIfKeyIsNotPressed(uint8_t x)
+{
+    const uint8_t key = registers[getRegisterName(x)];
+
+    if (!isKeyPressed(key))
+    {
+        programCounter += 2u;
+    }
 }
 
 void Chip::logRegisters()

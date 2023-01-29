@@ -1,10 +1,12 @@
 #pragma once
 
 #include "MyGfx.h"
+#include "MyKeyboardInput.h"
 
 #include <stdint.h>
 #include <stack>
 #include <map>
+#include <string>
 
 namespace MyChip8
 {
@@ -32,7 +34,19 @@ enum class InstructionType
     SUBTRACT_VX_VY,
     SUBTRACT_VY_VX,
     SHIFT_RIGHT,
-    SHIFT_LEFT
+    SHIFT_LEFT,
+    RANDOM,
+    SKIP_IF_KEY_PRESSED,
+    SKIP_IF_KEY_NOT_PRESSED,
+    SET_VX_TIMER,
+    SET_DELAY_TIMER_VX,
+    SET_SOUND_TIMER_VX,
+    ADD_TO_IDX,
+    GET_KEY,
+    FONT_CHAR,
+    BIN_CODED_DEC_CONV,
+    STORE_MEM,
+    LOAD_MEM
 };
 
 const std::map<InstructionType, std::string> instrTypeVsDescriptionMap
@@ -130,6 +144,11 @@ public:
     void substractVyAndVx(uint8_t x, uint8_t y);
     void shiftRight(uint8_t x, uint8_t y);
     void shiftLeft(uint8_t x, uint8_t y);
+
+    void random(uint8_t x, uint8_t nn);
+    void skipIfKeyIsPressed(uint8_t x);
+    void skipIfKeyIsNotPressed(uint8_t x);
+    
     
     // logging
     void logRegisters();
