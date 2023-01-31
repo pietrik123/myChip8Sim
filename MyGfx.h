@@ -2,6 +2,8 @@
 
 #include "SDL2/SDL.h"
 
+#include <memory>
+
 class MyGfx
 {
     SDL_Window* window;
@@ -10,7 +12,7 @@ class MyGfx
     
     int width, height, scale;
     
-    bool* pixelsFilled;
+    std::unique_ptr<bool[]> pixelsFilled;
     
     bool init();
 public:

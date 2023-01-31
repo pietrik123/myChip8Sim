@@ -3,13 +3,11 @@
 #include <stdexcept>
 #include <iostream>
 
-MyGfx::MyGfx(int w, int h, int s)
+MyGfx::MyGfx(int w, int h, int s) : pixelsFilled(new bool [w*h])
 {
     width = w;
     height = h;
     scale = s;
-    
-    pixelsFilled = new bool[width*height];
     
     if (!init())
     {
@@ -19,7 +17,6 @@ MyGfx::MyGfx(int w, int h, int s)
 
 MyGfx::~MyGfx()
 {
-    delete [] pixelsFilled;
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

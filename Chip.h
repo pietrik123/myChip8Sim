@@ -110,6 +110,8 @@ private:
     uint8_t soundTimer;
 
     std::stack<uint16_t> stack;
+
+    void skipDependingOnKeyState(uint8_t,bool);
 public:
     
     Chip();
