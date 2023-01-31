@@ -106,12 +106,11 @@ private:
     uint16_t registerIdx;
     std::map<std::string, uint8_t> registers;
 
+    uint8_t delayTimer;
+    uint8_t soundTimer;
+
     std::stack<uint16_t> stack;
 public:
-
-
-    // TODO delay timer
-    // TODO sound timer
     
     Chip();
     
@@ -148,8 +147,11 @@ public:
     void random(uint8_t x, uint8_t nn);
     void skipIfKeyIsPressed(uint8_t x);
     void skipIfKeyIsNotPressed(uint8_t x);
-    
-    
+
+    void setVxDelayTimer(uint8_t x);
+    void setDelayTimerVx(uint8_t x);
+    void setSoundTimerVx(uint8_t x);
+        
     // logging
     void logRegisters();
     void logStack();

@@ -418,26 +418,40 @@ void Chip::random(uint8_t x, uint8_t nn)
     registers[getRegisterName(x)] = std::rand() % 255;
 }
 
-
-void Chip::skipIfKeyIsPressed(uint8_t x)
+void Chip::skipDependingOnKeyState(uint8_t x, bool keyStatePressed)
 {
     const uint8_t key = registers[getRegisterName(x)];
-
-    if (isKeyPressed(key))
+    if (!(isKeyPressed(key) ^ keyStatePressed))
     {
         programCounter += 2u;
     }
+}
+
+void Chip::skipIfKeyIsPressed(uint8_t x)
+{
+    skipDependingOnKeyState(x, true);
 }
 
 void Chip::skipIfKeyIsNotPressed(uint8_t x)
 {
-    const uint8_t key = registers[getRegisterName(x)];
-
-    if (!isKeyPressed(key))
-    {
-        programCounter += 2u;
-    }
+    skipDependingOnKeyState(x, false);
 }
+
+void Chip::setVxDelayTimer(uint8_t x)
+{
+    registers[getRegisterName(x)] = delayTimer;
+}
+
+void Chip::setDelayTimerVx(uint8_t x)
+{
+    delayTimer = registers[getRegisterName(x)];
+}
+
+void Chip::setSoundTimerVx(uint8_t x)
+{
+    soundTimer = registers[getRegisterName(x)];
+}
+
 
 void Chip::logRegisters()
 {
