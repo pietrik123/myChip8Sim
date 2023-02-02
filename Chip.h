@@ -96,6 +96,7 @@ class Chip
 {
 private:
     static const uint16_t programStart = 0x200u;
+    static const uint16_t fontOffset = 0x050u;
     static const uint8_t screenWidth = 64u;
     static const uint8_t screenHeight = 32u;
     static const int memSize = 4096;
@@ -122,12 +123,16 @@ public:
     void execute(MyGfx* gfx, const InstructionData& data);
     
     // instructions
-    void clearScreen(MyGfx* gfx);
-    void jump(uint16_t nnn);
-    void setRegisterVx(uint8_t x, uint8_t nn);
-    void addValToVx(uint8_t x, uint8_t nn);
-    void setIdxRegister(uint16_t nnn);
-    void display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n);
+    void f_00E0_clearScreen(MyGfx* gfx);
+    void f_1NNN_jump(uint16_t nnn);
+    void jumpWithOffset(uint16_t nnn);
+    void addToIndex(uint8_t x);
+    void f_6XNN_setRegisterVx(uint8_t x, uint8_t nn);
+    void f_7XNN_addValToVx(uint8_t x, uint8_t nn);
+    void f_ANNN_setIdxRegister(uint16_t nnn);
+    
+    void f_DXYN_display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n);
+    
     void callSubroutine(uint16_t nnn);
     void returnFromSubroutine();
 
@@ -147,8 +152,17 @@ public:
     void shiftLeft(uint8_t x, uint8_t y);
 
     void random(uint8_t x, uint8_t nn);
+    
     void skipIfKeyIsPressed(uint8_t x);
     void skipIfKeyIsNotPressed(uint8_t x);
+    void getKey();
+
+    void getCharacter(uint8_t x);
+    
+    void binDecConvert(uint8_t x);
+
+    void storeInMem(uint8_t x);
+    void loadFromMem(uint8_t x);
 
     void setVxDelayTimer(uint8_t x);
     void setDelayTimerVx(uint8_t x);

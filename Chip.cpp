@@ -44,7 +44,7 @@ Chip::Chip()
     registers["VE"] = 0;
     registers["VF"] = 0;
     
-    std::memcpy(memory+0x050, fontsData, 80);
+    std::memcpy(memory+fontOffset, fontsData, 80);
     programCounter = programStart;
 
     std::srand(std::time(nullptr));
@@ -196,36 +196,46 @@ void Chip::execute(MyGfx* gfx, const InstructionData& data)
     switch (data.instructionType)
     {
         case InstructionType::CLEAR_SCREEN:
-            clearScreen(gfx);
+            f_00E0_clearScreen(gfx);
             break;
         case InstructionType::JUMP:
-            jump(data.nnn);
+            f_1NNN_jump(data.nnn);
             break;
         case InstructionType::SET_VX:
-            setRegisterVx(data.x, data.nn);
+            f_6XNN_setRegisterVx(data.x, data.nn);
             break;
         case InstructionType::ADD_TO_VX:
-            addValToVx(data.x, data.nn);
+            f_7XNN_addValToVx(data.x, data.nn);
             break;
         case InstructionType::SET_IDX:
-            setIdxRegister(data.nnn);
+            f_ANNN_setIdxRegister(data.nnn);
             break;
         case InstructionType::DISPLAY:
-            display(gfx, data.x, data.y, data.n);
+            f_DXYN_display(gfx, data.x, data.y, data.n);
             break;
         default:
             std::cout << "Unknown instruction: " << static_cast<int>(data.instructionType) << "\n-----\n";
     }
 }
 
-void Chip::clearScreen(MyGfx* gfx)
+void Chip::f_00E0_clearScreen(MyGfx* gfx)
 {
     gfx->clearDisplay();
 }
 
-void Chip::jump(uint16_t nnn)
+void Chip::f_1NNN_jump(uint16_t nnn)
 {
     programCounter = nnn;
+}
+
+void Chip::jumpWithOffset(uint16_t nnn)
+{
+    programCounter = nnn + registers["v0"];
+}
+
+void Chip::addToIndex(uint8_t x)
+{
+    registerIdx += registers[getRegisterName(x)];
 }
 
 void Chip::callSubroutine(uint16_t nnn)
@@ -240,17 +250,17 @@ void Chip::returnFromSubroutine()
     stack.pop();
 }
 
-void Chip::setRegisterVx(uint8_t x, uint8_t nn)
+void Chip::f_6XNN_setRegisterVx(uint8_t x, uint8_t nn)
 {
     registers[getRegisterName(x)] = nn;
 }
 
-void Chip::addValToVx(uint8_t x, uint8_t nn)
+void Chip::f_7XNN_addValToVx(uint8_t x, uint8_t nn)
 {
     registers[getRegisterName(x)] += nn;
 }
 
-void Chip::setIdxRegister(uint16_t nnn)
+void Chip::f_ANNN_setIdxRegister(uint16_t nnn)
 {
     registerIdx = nnn;
 }
@@ -364,7 +374,7 @@ void Chip::shiftLeft(uint8_t x, uint8_t y)
     vx = (vx << 1);
 }
 
-void Chip::display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n)
+void Chip::f_DXYN_display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n)
 {
     uint8_t posX = registers[getRegisterName(x)] % screenWidth;
     uint8_t posY = registers[getRegisterName(y)] % screenHeight;
@@ -435,6 +445,43 @@ void Chip::skipIfKeyIsPressed(uint8_t x)
 void Chip::skipIfKeyIsNotPressed(uint8_t x)
 {
     skipDependingOnKeyState(x, false);
+}
+
+void Chip::getKey()
+{
+    if (!isAnyKeyPressed())
+    {
+        programCounter -= 2u;  
+    }
+}
+
+void Chip::getCharacter(uint8_t x)
+{
+    registerIdx = fontOffset + (registers[getRegisterName(x)] & 0x0f) * 0x05;
+}
+
+void Chip::binDecConvert(uint8_t x)
+{
+    uint8_t val = registers[getRegisterName(x)];
+    memory[registerIdx] = val / 100u;
+    memory[registerIdx+2] = val % 10u;
+    memory[registerIdx+1] = (val - memory[registerIdx])/10u; 
+}
+
+void Chip::storeInMem(uint8_t x)
+{
+    for (auto i = 0u; i < x; i++)
+    {
+        memory[registerIdx+i] = registers[getRegisterName(i)];        
+    }
+}
+
+void Chip::loadFromMem(uint8_t x)
+{
+    for (auto i = 0u; i < x; i++)
+    {
+        registers[getRegisterName(i)] = memory[registerIdx+i];
+    }
 }
 
 void Chip::setVxDelayTimer(uint8_t x)
