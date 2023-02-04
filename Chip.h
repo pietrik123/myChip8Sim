@@ -155,7 +155,7 @@ public:
     
     void f_EX9E_skipIfKeyIsPressed(uint8_t x);
     void f_EXA1_skipIfKeyIsNotPressed(uint8_t x);
-    void f_FX0A_getKey();
+    void f_FX0A_getKey(uint8_t x);
 
     void f_FX29_getCharacter(uint8_t x);
     

@@ -30,15 +30,15 @@ bool isKeyPressed(uint8_t key)
     return keyboardState[code];
 }
 
-bool isAnyKeyPressed()
+std::optional<uint8_t> getPressedKey()
 {
     for (uint8_t i = 0u; i < 16u; i++)
     {
         if (isKeyPressed(i))
         {
-            return true;
+            return {i};
         }
     }
-    return false;
+    return std::nullopt;
 }
 

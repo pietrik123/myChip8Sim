@@ -2,5 +2,7 @@
 
 #include "SDL2/SDL.h"
 
+#include <optional>
+
 bool isKeyPressed(uint8_t key);
-bool isAnyKeyPressed();
+std::optional<uint8_t> getPressedKey();
