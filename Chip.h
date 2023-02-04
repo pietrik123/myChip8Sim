@@ -125,48 +125,48 @@ public:
     // instructions
     void f_00E0_clearScreen(MyGfx* gfx);
     void f_1NNN_jump(uint16_t nnn);
-    void jumpWithOffset(uint16_t nnn);
-    void addToIndex(uint8_t x);
+    void f_BNNN_jumpWithOffset(uint16_t nnn);
+    void f_FX1E_addToIndex(uint8_t x);
     void f_6XNN_setRegisterVx(uint8_t x, uint8_t nn);
     void f_7XNN_addValToVx(uint8_t x, uint8_t nn);
     void f_ANNN_setIdxRegister(uint16_t nnn);
     
     void f_DXYN_display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n);
     
-    void callSubroutine(uint16_t nnn);
-    void returnFromSubroutine();
+    void f_2NNN_callSubroutine(uint16_t nnn);
+    void f_00EE_returnFromSubroutine();
 
-    void skipVxEqualNN(uint8_t x, uint8_t nn);
-    void skipVxNotEqualNN(uint8_t x, uint8_t nn);
-    void skipVxEqualVy(uint8_t x, uint8_t y);
-    void skipVxNotEqualVy(uint8_t x, uint8_t y);
+    void f_3XNN_skipVxEqualNN(uint8_t x, uint8_t nn);
+    void f_4XNN_skipVxNotEqualNN(uint8_t x, uint8_t nn);
+    void f_5XY0_skipVxEqualVy(uint8_t x, uint8_t y);
+    void f_9XY0_skipVxNotEqualVy(uint8_t x, uint8_t y);
 
-    void setVxVy(uint8_t x, uint8_t y);
-    void binaryOr(uint8_t x, uint8_t y);
-    void binaryAnd(uint8_t x, uint8_t y);
-    void logicalXor(uint8_t x, uint8_t y);
-    void addVxAndVy(uint8_t x, uint8_t y);
-    void substractVxAndVy(uint8_t x, uint8_t y);
-    void substractVyAndVx(uint8_t x, uint8_t y);
-    void shiftRight(uint8_t x, uint8_t y);
-    void shiftLeft(uint8_t x, uint8_t y);
+    void f_8XY0_setVxVy(uint8_t x, uint8_t y);
+    void f_8XY1_binaryOr(uint8_t x, uint8_t y);
+    void f_8XY2_binaryAnd(uint8_t x, uint8_t y);
+    void f_8XY3_logicalXor(uint8_t x, uint8_t y);
+    void f_8XY4_addVxAndVy(uint8_t x, uint8_t y);
+    void f_8XY5_substractVxAndVy(uint8_t x, uint8_t y);
+    void f_8XY7_substractVyAndVx(uint8_t x, uint8_t y);
+    void f_8XY6_shiftRight(uint8_t x, uint8_t y);
+    void f_8XYE_shiftLeft(uint8_t x, uint8_t y);
 
-    void random(uint8_t x, uint8_t nn);
+    void f_CXNN_random(uint8_t x, uint8_t nn);
     
-    void skipIfKeyIsPressed(uint8_t x);
-    void skipIfKeyIsNotPressed(uint8_t x);
-    void getKey();
+    void f_EX9E_skipIfKeyIsPressed(uint8_t x);
+    void f_EXA1_skipIfKeyIsNotPressed(uint8_t x);
+    void f_FX0A_getKey();
 
-    void getCharacter(uint8_t x);
+    void f_FX29_getCharacter(uint8_t x);
     
-    void binDecConvert(uint8_t x);
+    void f_FX33_binDecConvert(uint8_t x);
 
-    void storeInMem(uint8_t x);
-    void loadFromMem(uint8_t x);
+    void f_FX55_storeInMem(uint8_t x);
+    void f_FX65_loadFromMem(uint8_t x);
 
-    void setVxDelayTimer(uint8_t x);
-    void setDelayTimerVx(uint8_t x);
-    void setSoundTimerVx(uint8_t x);
+    void f_FX07_setVxDelayTimer(uint8_t x);
+    void f_FX15_setDelayTimerVx(uint8_t x);
+    void f_FX18_setSoundTimerVx(uint8_t x);
         
     // logging
     void logRegisters();
