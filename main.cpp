@@ -39,6 +39,8 @@ int main(int argc, char** argv)
         uint16_t rawCmd = myChip.fetch();
         auto instrData = myChip.decode(rawCmd);
         myChip.execute(&gfx, instrData);
+        myChip.handleDelayTimer();
+        myChip.handleSoundTimer();
         
         cnt++;
         

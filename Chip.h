@@ -16,6 +16,7 @@ enum class InstructionType
     UNKNOWN,
     CLEAR_SCREEN,
     JUMP,
+    JUMP_WITH_OFFSET,
     SET_VX,
     ADD_TO_VX,
     SET_IDX,
@@ -54,10 +55,38 @@ const std::map<InstructionType, std::string> instrTypeVsDescriptionMap
     {InstructionType::UNKNOWN, "UNKNOWN"},
     {InstructionType::CLEAR_SCREEN, "CLEAR_SCREEN"},
     {InstructionType::JUMP, "JUMP"},
+    {InstructionType::JUMP_WITH_OFFSET, "JUMP_WITH_OFFSET"},
     {InstructionType::SET_VX, "SET_VX"},
     {InstructionType::ADD_TO_VX, "ADD_TO_VX"},
     {InstructionType::SET_IDX, "SET_IDX"},
-    {InstructionType::DISPLAY, "DISPLAY"}
+    {InstructionType::DISPLAY, "DISPLAY"},
+    {InstructionType::CALL_SUBROUTINE, "CALL_SUBROUTINE"},
+    {InstructionType::RETURN_FROM_SUBROUTINE, "RETURN_FROM_SUBROUTINE"},
+    {InstructionType::SKIP_VX_EQUAL_NN, "SKIP_VX_EQUAL_NN"},
+    {InstructionType::SKIP_VX_NOT_EQUAL_NN, "SKIP_VX_NOT_EQUAL_NN"},
+    {InstructionType::SKIP_VX_EQUAL_VY, "SKIP_VX_EQUAL_VY"},
+    {InstructionType::SKIP_VX_NOT_EQUAL_VY, "SKIP_VX_NOT_EQUAL_VY"},
+    {InstructionType::SET_VX_VY, "SET_VX_VY"},
+    {InstructionType::BINARY_OR, "BINARY_OR"},
+    {InstructionType::BINARY_AND, "BINARY_AND"},
+    {InstructionType::LOGICAL_XOR, "LOGICAL_XOR"},
+    {InstructionType::ADD_VX_VY, "ADD_VX_VY"},
+    {InstructionType::SUBTRACT_VX_VY, "SUBTRACT_VX_VY"},
+    {InstructionType::SUBTRACT_VY_VX, "SUBTRACT_VY_VX"},
+    {InstructionType::SHIFT_RIGHT, "SHIFT_RIGHT"},
+    {InstructionType::SHIFT_LEFT, "SHIFT_LEFT"},
+    {InstructionType::RANDOM, "RANDOM"},
+    {InstructionType::SKIP_IF_KEY_PRESSED, "SKIP_IF_KEY_PRESSED"},
+    {InstructionType::SKIP_IF_KEY_NOT_PRESSED, "SKIP_IF_KEY_NOT_PRESSED"},
+    {InstructionType::SET_VX_TIMER, "SET_VX_TIMER"},
+    {InstructionType::SET_DELAY_TIMER_VX, "SET_DELAY_TIMER_VX"},
+    {InstructionType::SET_SOUND_TIMER_VX, "SET_SOUND_TIMER_VX"},
+    {InstructionType::ADD_TO_IDX, "ADD_TO_IDX"},
+    {InstructionType::GET_KEY, "GET_KEY"},
+    {InstructionType::FONT_CHAR, "FONT_CHAR"},
+    {InstructionType::BIN_CODED_DEC_CONV, "BIN_CODED_DEC_CONV"},
+    {InstructionType::STORE_MEM, "STORE_MEM"},
+    {InstructionType::LOAD_MEM, "LOAD_MEM"}
 };
 
 std::string getInstructionTypeDescription(InstructionType instructionType);
@@ -94,7 +123,13 @@ const uint8_t fontsData[] =
 
 class Chip
 {
+
+#ifndef UNIT_TEST
 private:
+#else
+public:
+#endif
+
     static const uint16_t programStart = 0x200u;
     static const uint16_t fontOffset = 0x050u;
     static const uint8_t screenWidth = 64u;
@@ -120,10 +155,13 @@ public:
     // operation funtion : fetch instruction, decode it and execute it
     uint16_t fetch();   
     InstructionData decode(uint16_t rawInstruction);
-    void execute(MyGfx* gfx, const InstructionData& data);
+    void execute(GfxInterface* gfx, const InstructionData& data);
+
+    void handleDelayTimer();
+    void handleSoundTimer();
     
     // instructions
-    void f_00E0_clearScreen(MyGfx* gfx);
+    void f_00E0_clearScreen(GfxInterface* gfx);
     void f_1NNN_jump(uint16_t nnn);
     void f_BNNN_jumpWithOffset(uint16_t nnn);
     void f_FX1E_addToIndex(uint8_t x);
@@ -131,7 +169,7 @@ public:
     void f_7XNN_addValToVx(uint8_t x, uint8_t nn);
     void f_ANNN_setIdxRegister(uint16_t nnn);
     
-    void f_DXYN_display(MyGfx* gfx, uint8_t x, uint8_t y, uint8_t n);
+    void f_DXYN_display(GfxInterface* gfx, uint8_t x, uint8_t y, uint8_t n);
     
     void f_2NNN_callSubroutine(uint16_t nnn);
     void f_00EE_returnFromSubroutine();

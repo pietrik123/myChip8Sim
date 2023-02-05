@@ -1,7 +1,6 @@
 #include "Chip.h"
 
 #include <iostream>
-#include <iomanip>
 #include <cstring>
 #include <fstream>
 #include <vector>
@@ -136,13 +135,17 @@ static InstructionType getInstructionType(uint8_t* nibblesArray)
     {
         return InstructionType::SUBTRACT_VY_VX;
     }
-    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0x8)
+    else if (nibblesArray[0] == 0x8 && nibblesArray[3] == 0xe)
     {
         return InstructionType::SHIFT_LEFT;
     }
     else if (nibblesArray[0] == 0xa)
     {
         return InstructionType::SET_IDX;
+    }
+    else if (nibblesArray[0] == 0xb)
+    {
+        return InstructionType::JUMP_WITH_OFFSET;
     }
     else if (nibblesArray[0] == 0xc)
     {
@@ -151,6 +154,54 @@ static InstructionType getInstructionType(uint8_t* nibblesArray)
     else if (nibblesArray[0] == 0xd)
     {
         return InstructionType::DISPLAY;
+    }
+    else if (nibblesArray[0] == 0xe && nibblesArray[3] == 0xe)
+    {
+        return InstructionType::SKIP_IF_KEY_PRESSED;
+    }
+    else if (nibblesArray[0] == 0xe && nibblesArray[3] == 0x1)
+    {
+        return InstructionType::SKIP_IF_KEY_NOT_PRESSED;
+    }
+    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0xa)
+    {
+        return InstructionType::GET_KEY;
+    }
+    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0x9)
+    {
+        return InstructionType::FONT_CHAR;
+    }
+    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0x3)
+    {
+        return InstructionType::BIN_CODED_DEC_CONV;
+    }
+    else if (nibblesArray[0] == 0xf && nibblesArray[2] == 0x5 &&
+             nibblesArray[3] == 0x5)
+    {
+        return InstructionType::STORE_MEM;
+    }
+    else if (nibblesArray[0] == 0xf && nibblesArray[2] == 0x6 &&
+             nibblesArray[3] == 0x5)
+    {
+        return InstructionType::LOAD_MEM;
+    }
+    else if (nibblesArray[0] == 0xf && nibblesArray[2] == 0x1 &&
+             nibblesArray[3] == 0x5)
+    {
+        return InstructionType::SET_DELAY_TIMER_VX;
+    }
+    else if (nibblesArray[0] == 0xf && nibblesArray[2] == 0x1 &&
+             nibblesArray[3] == 0xe)
+    {
+        return InstructionType::ADD_TO_IDX;
+    }
+    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0x7)
+    {
+        return InstructionType::SET_VX_TIMER;
+    }
+    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0x8)
+    {
+        return InstructionType::SET_SOUND_TIMER_VX;
     }
     return InstructionType::UNKNOWN;
 }
@@ -190,7 +241,7 @@ InstructionData Chip::decode(uint16_t rawInstruction)
     return data;
 }
 
-void Chip::execute(MyGfx* gfx, const InstructionData& data)
+void Chip::execute(GfxInterface* gfx, const InstructionData& data)
 {
     switch (data.instructionType)
     {
@@ -294,6 +345,22 @@ void Chip::execute(MyGfx* gfx, const InstructionData& data)
             f_FX65_loadFromMem(data.x);
         default:
             std::cout << "Unknown instruction: " << static_cast<int>(data.instructionType) << "\n-----\n";
+    }
+}
+
+void Chip::handleDelayTimer()
+{
+    if (delayTimer > 0)
+    {
+        delayTimer--;
+    }
+}
+
+void Chip::handleSoundTimer()
+{
+    if (soundTimer > 0)
+    {
+        soundTimer--;
     }
 }
 

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "SDL2/SDL.h"
+#include "GfxInterface.h"
 
 #include <memory>
 
-class MyGfx
+class MyGfx : public GfxInterface
 {
     SDL_Window* window;
     SDL_Surface* scrSurf;
