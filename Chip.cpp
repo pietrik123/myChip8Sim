@@ -6,6 +6,7 @@
 #include <vector>
 #include <ctime>
 #include <random>
+#include <iomanip>
 
 namespace MyChip8
 {
@@ -19,29 +20,9 @@ std::string getInstructionTypeDescription(InstructionType instructionType)
     return std::string {"UNKNOW_DESCRIPTION"};
 }
 
-std::string getRegisterName(uint8_t idx)
-{
-    return std::string {"v"} + std::to_string(static_cast<int>(idx));
-}
-
 Chip::Chip()
 {
-    registers["V0"] = 0;
-    registers["V1"] = 0;
-    registers["V2"] = 0;
-    registers["V3"] = 0;
-    registers["V4"] = 0;
-    registers["V5"] = 0;
-    registers["V6"] = 0;
-    registers["V7"] = 0;
-    registers["V8"] = 0;
-    registers["V9"] = 0;
-    registers["VA"] = 0;
-    registers["VB"] = 0;
-    registers["VC"] = 0;
-    registers["VD"] = 0;
-    registers["VE"] = 0;
-    registers["VF"] = 0;
+    registers.fill(0u);
     
     std::memcpy(memory+fontOffset, fontsData, 80);
     programCounter = programStart;
@@ -155,23 +136,23 @@ static InstructionType getInstructionType(uint8_t* nibblesArray)
     {
         return InstructionType::DISPLAY;
     }
-    else if (nibblesArray[0] == 0xe && nibblesArray[3] == 0xe)
+    else if (nibblesArray[0] == 0xe && nibblesArray[2] == 0x9 && nibblesArray[3] == 0xe)
     {
         return InstructionType::SKIP_IF_KEY_PRESSED;
     }
-    else if (nibblesArray[0] == 0xe && nibblesArray[3] == 0x1)
+    else if (nibblesArray[0] == 0xe && nibblesArray[2] == 0xa && nibblesArray[3] == 0x1)
     {
         return InstructionType::SKIP_IF_KEY_NOT_PRESSED;
     }
-    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0xa)
+    else if (nibblesArray[0] == 0xf && nibblesArray[2] == 0x0 && nibblesArray[3] == 0xa)
     {
         return InstructionType::GET_KEY;
     }
-    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0x9)
+    else if (nibblesArray[0] == 0xf && nibblesArray[2] == 0x2 && nibblesArray[3] == 0x9)
     {
         return InstructionType::FONT_CHAR;
     }
-    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0x3)
+    else if (nibblesArray[0] == 0xf && nibblesArray[2] == 0x3 && nibblesArray[3] == 0x3)
     {
         return InstructionType::BIN_CODED_DEC_CONV;
     }
@@ -195,11 +176,11 @@ static InstructionType getInstructionType(uint8_t* nibblesArray)
     {
         return InstructionType::ADD_TO_IDX;
     }
-    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0x7)
+    else if (nibblesArray[0] == 0xf && nibblesArray[2] == 0x0 && nibblesArray[3] == 0x7)
     {
         return InstructionType::SET_VX_TIMER;
     }
-    else if (nibblesArray[0] == 0xf && nibblesArray[3] == 0x8)
+    else if (nibblesArray[0] == 0xf && nibblesArray[2] == 0x1 && nibblesArray[3] == 0x8)
     {
         return InstructionType::SET_SOUND_TIMER_VX;
     }
@@ -343,6 +324,7 @@ void Chip::execute(GfxInterface* gfx, const InstructionData& data)
             break;
         case InstructionType::LOAD_MEM:
             f_FX65_loadFromMem(data.x);
+            break;
         default:
             std::cout << "Unknown instruction: " << static_cast<int>(data.instructionType) << "\n-----\n";
     }

@@ -12,12 +12,12 @@ void Chip::f_00E0_clearScreen(GfxInterface* gfx)
 
 void Chip::f_DXYN_display(GfxInterface* gfx, uint8_t x, uint8_t y, uint8_t n)
 {
-    uint8_t posX = registers[getRegisterName(x)] % screenWidth;
-    uint8_t posY = registers[getRegisterName(y)] % screenHeight;
+    uint8_t posX = registers[x] % screenWidth;
+    uint8_t posY = registers[y] % screenHeight;
     
     std::cout << "[x,y] " << static_cast<int>(posX) << " " << static_cast<int>(posY) << "\n";
     
-    registers["vf"] = 0;
+    registers[0xf] = 0;
     
     for (auto i = 0; i < n; i++)
     {
@@ -47,7 +47,7 @@ void Chip::f_DXYN_display(GfxInterface* gfx, uint8_t x, uint8_t y, uint8_t n)
                 {
                     gfx->clearPixel(currentPixelPosX, currentPixelPosY);
                     // set vf register
-                    registers["vf"] = 1;
+                    registers[0xf] = 1;
                 }
                 else
                 {
@@ -61,7 +61,7 @@ void Chip::f_DXYN_display(GfxInterface* gfx, uint8_t x, uint8_t y, uint8_t n)
 
 void Chip::skipDependingOnKeyState(uint8_t x, bool keyStatePressed)
 {
-    const uint8_t key = registers[getRegisterName(x)];
+    const uint8_t key = registers[x];
     if (!(isKeyPressed(key) ^ keyStatePressed))
     {
         programCounter += 2u;
@@ -87,7 +87,7 @@ void Chip::f_FX0A_getKey(uint8_t x)
     }
     else
     {
-        registers[getRegisterName(x)] = optKeyPressed.value();
+        registers[x] = optKeyPressed.value();
     }
 }
 

@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <stack>
+#include <array>
 #include <map>
 #include <string>
 
@@ -134,13 +135,15 @@ public:
     static const uint16_t fontOffset = 0x050u;
     static const uint8_t screenWidth = 64u;
     static const uint8_t screenHeight = 32u;
+    static const uint8_t numOfRegisters = 16u;
     static const int memSize = 4096;
 
     // memory and registers
     uint8_t memory[memSize];
     uint16_t programCounter;
     uint16_t registerIdx;
-    std::map<std::string, uint8_t> registers;
+
+    std::array<uint8_t, numOfRegisters> registers;
 
     uint8_t delayTimer;
     uint8_t soundTimer;
@@ -215,7 +218,5 @@ public:
     bool loadProgram(const std::string& fileName);
 
 };
-
-std::string getRegisterName(uint8_t idx);
 
 }

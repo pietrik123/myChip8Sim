@@ -49,7 +49,7 @@ int main(int argc, char** argv)
             break;
         }
         
-        SDL_Delay(50);
+        SDL_Delay(20);
     }
     
     SDL_Delay(200);
