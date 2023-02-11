@@ -149,7 +149,7 @@ TEST_CASE("Test_add_vx_vy", "test add vx and vy")
     SECTION("test ADD overflow")
     {
         myChip.f_8XY4_addVxAndVy(3u, 4u);
-        REQUIRE( myChip.registers[0x3] == 0x01);
+        REQUIRE( myChip.registers[0x3] == 0x00);
         REQUIRE( myChip.registers[0x4] == 0x02);
         REQUIRE( myChip.registers[0xf] == 0x01);
     }
@@ -288,4 +288,21 @@ TEST_CASE("Test_skip", "test skip")
         myChip.f_9XY0_skipVxNotEqualVy(0x01, 0x02);
         REQUIRE( myChip.programCounter == 0x302);
     }
+}
+
+TEST_CASE("Test_shift", "test shift")
+{
+    MyChip8::Chip myChip {};
+
+    myChip.registers[0x1] = 0x00; 
+    myChip.registers[0x2] = 0x00; 
+
+    myChip.registers[0x3] = 0x03; // 0b0000'0011
+    myChip.registers[0x4] = 0xc0; // 0b1100'0000
+
+    myChip.f_8XY6_shiftRight(1u, 3u);
+    REQUIRE( myChip.registers[0x1] == 0x01); // 0b0000'0001
+
+    myChip.f_8XYE_shiftLeft(2u, 4u);
+    REQUIRE( myChip.registers[0x2] == 0x80); // 0b1000'0000
 }

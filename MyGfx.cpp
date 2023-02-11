@@ -8,6 +8,11 @@ MyGfx::MyGfx(int w, int h, int s) : pixelsFilled(new bool [w*h])
     width = w;
     height = h;
     scale = s;
+
+    for (int i=0; i<width*height; i++)
+    {
+        pixelsFilled[i] = true;
+    }
     
     if (!init())
     {

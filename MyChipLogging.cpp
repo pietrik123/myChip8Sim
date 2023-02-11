@@ -15,7 +15,14 @@ void Chip::logStack()
 
 void Chip::logRegisters()
 {
-
+    int cnt = 0;
+    for (const auto r : registers)
+    {
+        std::cout << "v" << std::hex << cnt << " : " << std::hex << static_cast<int>(r) << "; ";
+        cnt++;
+    }
+    std::cout << "PC : " << programCounter << "\n";
+    std::cout << "I : " << registerIdx << "\n";
 }
 
 void Chip::logMemory(int offset, int numOfBytes)

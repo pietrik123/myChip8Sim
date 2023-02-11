@@ -116,7 +116,7 @@ void Chip::f_8XY4_addVxAndVy(uint8_t x, uint8_t y)
     uint16_t tmpSum = vx + vy;
     
     registers[0xf] = (tmpSum > 0xff ? 1 : 0);
-    vx  = tmpSum > 0xff ? (tmpSum>>8) : tmpSum;
+    vx  = tmpSum > 0xff ? (tmpSum & 0xff) : tmpSum;
 }
 
 void Chip::f_8XY5_substractVxAndVy(uint8_t x, uint8_t y)
@@ -142,7 +142,7 @@ void Chip::f_8XY6_shiftRight(uint8_t x, uint8_t y)
     auto& vx = registers[x];
     const auto& vy = registers[y];
 
-    vx = vy;
+    //vx = vy;
     registers[0xf] = ((vx & 0x1) > 0u ? 1 : 0);
     vx = (vx >> 1);
 }
@@ -152,7 +152,7 @@ void Chip::f_8XYE_shiftLeft(uint8_t x, uint8_t y)
     auto& vx = registers[x];
     const auto& vy = registers[y];
 
-    vx = vy;
+    //vx = vy;
     registers[0xf] = (vx & 0x80 > 0u ? 1 : 0);
     vx = (vx << 1);
 }
@@ -172,7 +172,7 @@ void Chip::f_FX33_binDecConvert(uint8_t x)
     uint8_t val = registers[x];
     memory[registerIdx] = val / 100u;
     memory[registerIdx+2] = val % 10u;
-    memory[registerIdx+1] = (val - memory[registerIdx])/10u; 
+    memory[registerIdx+1] = (val - memory[registerIdx]*100)/10u; 
 }
 
 void Chip::f_FX55_storeInMem(uint8_t x)

@@ -39,6 +39,7 @@ int main(int argc, char** argv)
         uint16_t rawCmd = myChip.fetch();
         auto instrData = myChip.decode(rawCmd);
         myChip.execute(&gfx, instrData);
+        // myChip.logRegisters();
         myChip.handleDelayTimer();
         myChip.handleSoundTimer();
         
@@ -49,7 +50,7 @@ int main(int argc, char** argv)
             break;
         }
         
-        SDL_Delay(20);
+        SDL_Delay(3);
     }
     
     SDL_Delay(200);

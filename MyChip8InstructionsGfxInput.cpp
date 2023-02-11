@@ -15,7 +15,9 @@ void Chip::f_DXYN_display(GfxInterface* gfx, uint8_t x, uint8_t y, uint8_t n)
     uint8_t posX = registers[x] % screenWidth;
     uint8_t posY = registers[y] % screenHeight;
     
+#ifdef DEBUG
     std::cout << "[x,y] " << static_cast<int>(posX) << " " << static_cast<int>(posY) << "\n";
+#endif
     
     registers[0xf] = 0;
     

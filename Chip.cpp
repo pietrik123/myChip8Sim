@@ -210,6 +210,7 @@ InstructionData Chip::decode(uint16_t rawInstruction)
     data.nn = static_cast<uint8_t>(rawInstruction & 0x00ff);
     data.nnn = rawInstruction & 0x0fff;
     
+#ifdef DEBUG
     std::cout << "Raw instr: " << std::hex << static_cast<int>(rawInstruction) << "\n";
 
     std::cout << "Instruction type: " << getInstructionTypeDescription(data.instructionType) << " \n"
@@ -218,7 +219,7 @@ InstructionData Chip::decode(uint16_t rawInstruction)
               << "N: " << static_cast<int>(data.n) << " \n"
               << "NN: " << static_cast<int>(data.nn) << " \n"
               << "NNN: " << static_cast<int>(data.nnn) << " \n\n";
-    
+#endif    
     return data;
 }
 
