@@ -142,7 +142,7 @@ void Chip::f_8XY6_shiftRight(uint8_t x, uint8_t y)
     auto& vx = registers[x];
     const auto& vy = registers[y];
 
-    //vx = vy;
+    vx = vy;
     registers[0xf] = ((vx & 0x1) > 0u ? 1 : 0);
     vx = (vx >> 1);
 }
@@ -152,7 +152,7 @@ void Chip::f_8XYE_shiftLeft(uint8_t x, uint8_t y)
     auto& vx = registers[x];
     const auto& vy = registers[y];
 
-    //vx = vy;
+    vx = vy;
     registers[0xf] = (vx & 0x80 > 0u ? 1 : 0);
     vx = (vx << 1);
 }

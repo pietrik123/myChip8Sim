@@ -1,1 +1,0 @@
-g++ -g main.cpp MyGfx.cpp Chip.cpp -std=c++11 -lSDL2main -lSDL2 -o build/chip8

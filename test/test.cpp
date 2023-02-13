@@ -294,15 +294,16 @@ TEST_CASE("Test_shift", "test shift")
 {
     MyChip8::Chip myChip {};
 
+
     myChip.registers[0x1] = 0x00; 
     myChip.registers[0x2] = 0x00; 
 
     myChip.registers[0x3] = 0x03; // 0b0000'0011
     myChip.registers[0x4] = 0xc0; // 0b1100'0000
 
-    myChip.f_8XY6_shiftRight(1u, 3u);
-    REQUIRE( myChip.registers[0x1] == 0x01); // 0b0000'0001
-
     myChip.f_8XYE_shiftLeft(2u, 4u);
     REQUIRE( myChip.registers[0x2] == 0x80); // 0b1000'0000
+
+    myChip.f_8XY6_shiftRight(1u, 3u);
+    REQUIRE( myChip.registers[0x1] == 0x01); // 0b0000'0001
 }
