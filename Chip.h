@@ -2,6 +2,7 @@
 
 #include "MyGfx.h"
 #include "MyKeyboardInput.h"
+#include "MyTimer.h"
 
 #include <stdint.h>
 #include <stack>
@@ -144,6 +145,9 @@ public:
     uint16_t registerIdx;
 
     std::array<uint8_t, numOfRegisters> registers;
+
+    MyTimerWrapper tim1;
+    MyTimerWrapper tim2;
 
     uint8_t delayTimer;
     uint8_t soundTimer;

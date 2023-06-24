@@ -20,7 +20,23 @@ std::string getInstructionTypeDescription(InstructionType instructionType)
     return std::string {"UNKNOW_DESCRIPTION"};
 }
 
-Chip::Chip()
+unsigned int timerCallbackDelay(unsigned int delayMs, void* data)
+{
+    Chip* ch = static_cast<Chip*>(data);
+
+    ch->handleDelayTimer();
+    return 0u;
+}
+
+unsigned int timerCallbackSound(unsigned int delayMs, void* data)
+{
+    Chip* ch = static_cast<Chip*>(data);
+
+    ch->handleSoundTimer();
+    return 0u;
+}
+
+Chip::Chip() : tim1(17), tim2(17)
 {
     registers.fill(0u);
     
@@ -28,6 +44,9 @@ Chip::Chip()
     programCounter = programStart;
 
     std::srand(std::time(nullptr));
+
+    tim1.start(timerCallbackDelay, this);
+    tim2.start(timerCallbackSound, this);
 }
 
 uint16_t Chip::fetch()

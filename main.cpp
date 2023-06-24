@@ -6,6 +6,8 @@
 #include <queue>
 #include <stack>
 
+#include <chrono>
+
 bool shouldQuit();
 
 int main(int argc, char** argv)
@@ -36,6 +38,8 @@ int main(int argc, char** argv)
     int cnt = 0;
     while (true)
     {
+        auto t1 = std::chrono::system_clock::now();
+
         uint16_t rawCmd = myChip.fetch();
         auto instrData = myChip.decode(rawCmd);
         myChip.execute(&gfx, instrData);
@@ -49,8 +53,14 @@ int main(int argc, char** argv)
         {
             break;
         }
+
+        //SDL_Delay(20);
+
+        auto t2 = std::chrono::system_clock::now();
+
+        std::cout << "Elapsed: " << std::dec << std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() << "\n";
         
-        SDL_Delay(3);
+        SDL_Delay(1);
     }
     
     SDL_Delay(200);

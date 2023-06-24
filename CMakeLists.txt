@@ -30,11 +30,13 @@ add_executable(myChip8Sim
     MyGfx.cpp
     MyGfx.h
     MyKeyboardInput.cpp
+    MyTimer.cpp
 )
 
 add_executable(tests
     test/test.cpp
     Chip.cpp
+    MyTimer.cpp
     MyChip8Instructions.cpp
     MyChip8InstructionsGfxInput.cpp
     )

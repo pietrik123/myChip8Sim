@@ -30,7 +30,7 @@ MyGfx::~MyGfx()
 bool MyGfx::init()
 {
     
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
     {
         std::cout << "Could not init video!\n";
         return false;
